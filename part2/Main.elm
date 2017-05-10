@@ -5,12 +5,7 @@ import Html.Attributes exposing (..)
 
 
 type alias Header =
-    { result :
-        { id : Int
-        , stars : Int
-        , name : String
-        }
-    }
+    { result : { id : Int, stars : Int, name : String } }
 
 
 model : Header
