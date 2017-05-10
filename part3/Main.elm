@@ -5,11 +5,15 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 
 
-type alias InitModel =
+type alias Model =
     { query : String, results : List { id : Int, name : String, stars : Int } }
 
 
-initialModel : InitModel
+type alias Msg =
+    { operation : String, data : Int }
+
+
+initialModel : Model
 initialModel =
     { query = "tutorial"
     , results =
@@ -45,6 +49,7 @@ elmHubHeader =
         ]
 
 
+view : Model -> Html Msg
 view model =
     div [ class "content" ]
         [ elmHubHeader
@@ -52,9 +57,10 @@ view model =
         ]
 
 
+viewSearchResult : Model -> Html Msg
 viewSearchResult result =
     li []
-        [ span [ class "star-count" ] [ text (toString result.stars) ]
+        [ span [ class "star-co unt" ] [ text (toString result.stars) ]
         , a [ href ("https://github.com/" ++ result.name), target "_blank" ]
             [ text result.name ]
         , button
@@ -64,6 +70,7 @@ viewSearchResult result =
         ]
 
 
+update : Msg -> Model -> Model
 update msg model =
     -- TODO if msg.operation == "DELETE_BY_ID",
     if msg.operation == "DELETE_BY_ID" then
@@ -72,6 +79,7 @@ update msg model =
         model
 
 
+main : Program Never Model { data : Int, operation : String }
 main =
     Html.beginnerProgram
         { view = view
