@@ -93,14 +93,29 @@ viewSearchResult result =
 
 {-| TODO add a type annotation to this function
 -}
+
+
+
+-- update : Msg -> Model -> Model
+-- update msg model =
+--     if msg.operation == "DELETE_BY_ID" then
+--         { model
+--             | results = List.filter (\result -> result.id /= msg.data) model.results
+--         }
+--     else
+--         model
+
+
 update : Msg -> Model -> Model
 update msg model =
-    if msg.operation == "DELETE_BY_ID" then
-        { model
-            | results = List.filter (\result -> result.id /= msg.data) model.results
-        }
-    else
-        model
+    case msg.operation of
+        "DELETE_BY_ID" ->
+            { model
+                | results = List.filter (\result -> result.id /= msg.data) model.results
+            }
+
+        _ ->
+            model
 
 
 main : Program Never Model Msg
