@@ -26,9 +26,9 @@ searchResultDecoder =
     --
     -- TODO replace these calls to `hardcoded` with calls to `required`
     decode SearchResult
-        |> hardcoded 0
-        |> hardcoded ""
-        |> hardcoded 0
+        |> required "id" int
+        |> required "full_name" string
+        |> required "stargazers_count" int
 
 
 type alias Model =
@@ -59,19 +59,22 @@ responseDecoder =
 
 decodeResults : String -> List SearchResult
 decodeResults json =
+    -- TODO add branches to this case-expression which return:
+    --
+    -- * the search results, if decoding succeeded
+    -- * an empty list if decoding failed
+    --
+    -- see http://package.elm-lang.org/packages/elm-lang/core/4.0.0/Json-Decode#decodeString
+    --
+    -- HINT: decodeString returns a Result which is one of the following:
+    --
+    -- Ok (List SearchResult)
+    -- Err String
     case decodeString responseDecoder json of
-        -- TODO add branches to this case-expression which return:
-        --
-        -- * the search results, if decoding succeeded
-        -- * an empty list if decoding failed
-        --
-        -- see http://package.elm-lang.org/packages/elm-lang/core/4.0.0/Json-Decode#decodeString
-        --
-        -- HINT: decodeString returns a Result which is one of the following:
-        --
-        -- Ok (List SearchResult)
-        -- Err String
-        _ ->
+        Ok searchResults ->
+            searchResults
+
+        Err errorMessage ->
             []
 
 
