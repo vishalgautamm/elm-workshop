@@ -136,11 +136,16 @@ type Msg
 
 decodeResponse : Value -> Msg
 decodeResponse json =
-    -- TODO use decodeValue to decode the response into a Msg.
-    --
-    -- Hint: look at the definition of Msg and
-    -- the definition of responseDecoder
-    HandleSearchError (Just "TODO decode the response!")
+    case decodeValue responseDecoder json of
+        Ok results ->
+            HandleSearchResponse results
+
+        Err errorMessage ->
+            HandleSearchError (Just errorMessage)
+
+
+
+-- I want to send a string to Javascript, and when I invoke that function 'githubSearch' I want to get back a Command that represents that idea
 
 
 port githubSearch : String -> Cmd msg
