@@ -28,16 +28,9 @@ searchFeed query =
                 ++ "&q="
                 ++ query
                 ++ "+language:elm&sort=stars&order=desc"
-
-        -- HINT: responseDecoder may be useful here.
-        request =
-            "TODO replace this String with a Request built using http://package.elm-lang.org/packages/elm-lang/http/latest/Http#get"
     in
-        -- TODO replace this Cmd.none with a call to Http.send
-        -- http://package.elm-lang.org/packages/elm-lang/http/latest/Http#send
-        --
-        -- HINT: request and HandleSearchResponse may be useful here.
-        Cmd.none
+        Http.get url responseDecoder
+            |> Http.send HandleSearchResponse
 
 
 responseDecoder : Decoder (List SearchResult)
@@ -51,6 +44,10 @@ searchResultDecoder =
         |> required "id" Json.Decode.int
         |> required "full_name" Json.Decode.string
         |> required "stargazers_count" Json.Decode.int
+
+
+
+-- MODEL
 
 
 type alias Model =
@@ -73,6 +70,10 @@ initialModel =
     , results = []
     , errorMessage = Nothing
     }
+
+
+
+-- VIEW
 
 
 view : Model -> Html Msg
@@ -117,6 +118,10 @@ type Msg
     | HandleSearchResponse (Result Http.Error (List SearchResult))
 
 
+
+-- UPDATE
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -126,20 +131,15 @@ update msg model =
         HandleSearchResponse result ->
             case result of
                 Ok results ->
-                    ( { model | results = results }, Cmd.none )
+                    ( { model | results = results, errorMessage = Nothing }, Cmd.none )
 
                 Err error ->
-                    -- TODO if decoding failed, store the message in model.errorMessage
-                    --
-                    -- HINT 1: Remember, model.errorMessage is a Maybe String - so it
-                    -- can only be set to either Nothing or (Just "some string here")
-                    --
-                    -- Hint 2: look for "decode" in the documentation for this union type:
-                    -- http://package.elm-lang.org/packages/elm-lang/http/latest/Http#Error
-                    --
-                    -- Hint 3: to check if this is working, break responseDecoder
-                    -- by changing "stargazers_count" to "description"
-                    ( model, Cmd.none )
+                    case error of
+                        Http.BadPayload errorMessage _ ->
+                            ( { model | errorMessage = Just errorMessage }, Cmd.none )
+
+                        _ ->
+                            ( model, Cmd.none )
 
         SetQuery query ->
             ( { model | query = query }, Cmd.none )
